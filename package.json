@@ -1,0 +1,24 @@
+{
+  "name": "rose-js",
+  "version": "0.0.1",
+  "description": "Shared Typescript tooling for web projects. ",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/branogoga/rose-js.git"
+  },
+  "author": "Brano Goga",
+  "license": "N/A",
+  "bugs": {
+    "url": "https://github.com/branogoga/rose-js/issues"
+  },
+  "homepage": "https://github.com/branogoga/rose-js#readme",
+  "dependencies": {
+    "typescript": "^3.5.3"
+  }
+}
