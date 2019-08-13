@@ -7,3 +7,4 @@ before_script:
  - chmod 0777 ./node_modules/.bin/jest
 script:
  - npm test
+ - npm run coveralls
