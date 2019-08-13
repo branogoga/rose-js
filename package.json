@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls"
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "jest": {
     "collectCoverage": true
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.17",
+    "coveralls": "^3.0.6",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2"
   }
