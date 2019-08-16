@@ -1,4 +1,4 @@
-import * as Rose from "../dist/index";
+import * as Rose from "./index";
 
 describe("foo ", function () {
     it(" not implemnted", function () {
