@@ -10,7 +10,7 @@ export interface ProviderInterface<ItemType> {
     remove(id: number): Promise<ItemType>;
 }
 
-export abstract class ProviderMockup<ItemType> implements ProviderInterface<ItemType> {
+export class ProviderMockup<ItemType> implements ProviderInterface<ItemType> {
 
     public constructor(private storage: Storage.StorageInterface<string>) {
         this.load();
@@ -144,9 +144,17 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
         return nextId;
     }
 
-    protected abstract getStorageKey(): string;
-    protected abstract getItemId(item: ItemType): number | undefined;
-    protected abstract setItemId(item: ItemType, id: number): void;
+    protected getStorageKey(): string {
+        throw new Error("Not implemented.");
+    }
+
+    protected getItemId(item: ItemType): number | undefined {
+        throw new Error("Not implemented.");
+    }
+
+    protected setItemId(item: ItemType, id: number): void {
+        throw new Error("Not implemented.");
+    }
 
     private serializeItems(items: Map<number, ItemType>): string {
         return JSON.stringify([...items]);
@@ -192,14 +200,19 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
         = new Map<number, ItemType>();
 }
 
-export abstract class Provider<ItemType>
+export class Provider<ItemType>
     implements ProviderInterface<ItemType> {
 
     public constructor(protected hostname: string = "http://vertigo.localhost") {
     }
 
-    protected abstract getId(item: ItemType): number | undefined;
-    protected abstract getResourcePathPart(): string;
+    protected getId(item: ItemType): number | undefined {
+        throw new Error("Not implemented.");
+    }
+
+    protected getResourcePathPart(): string {
+        throw new Error("Not implemented.");
+    }
 
     protected getListUri(): string {
         return this.hostname + this.getResourcePathPart() + "/";

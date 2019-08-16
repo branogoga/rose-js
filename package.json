@@ -1,6 +1,6 @@
 {
   "name": "rose-js",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Shared Typescript tooling for web projects. ",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
