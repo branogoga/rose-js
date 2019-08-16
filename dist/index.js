@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function add(a, b) {
-    return a + +b;
-}
-exports.add = add;
+const Data = require("./Data");
+exports.Data = Data;
+//(<any>window).Data = Data;

@@ -1,5 +1,4 @@
-import * as Data from "./Data/index";
-
+import * as Data from "./Data";
 export { Data };
 
-(<any>window).Data = Data;
+//(<any>window).Data = Data;
