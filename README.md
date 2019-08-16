@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/branogoga/rose-js.svg?branch=master)](https://travis-ci.org/branogoga/rose-js)
+[![Coverage Status](https://coveralls.io/repos/github/branogoga/rose-js/badge.svg?branch=master)](https://coveralls.io/github/branogoga/rose-js?branch=master)
 
 # rose-js
 Common Typescript tooling for web projects.
