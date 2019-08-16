@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "rm -f ./coverage/lcov.info && jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "jest": {
     "collectCoverage": true
