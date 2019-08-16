@@ -97,15 +97,6 @@ class ProviderMockup {
         this.nextId++;
         return nextId;
     }
-    getStorageKey() {
-        throw new Error("Not implemented.");
-    }
-    getItemId(item) {
-        throw new Error("Not implemented.");
-    }
-    setItemId(item, id) {
-        throw new Error("Not implemented.");
-    }
     serializeItems(items) {
         return JSON.stringify([...items]);
     }
@@ -141,12 +132,6 @@ exports.ProviderMockup = ProviderMockup;
 class Provider {
     constructor(hostname = "http://vertigo.localhost") {
         this.hostname = hostname;
-    }
-    getId(item) {
-        throw new Error("Not implemented.");
-    }
-    getResourcePathPart() {
-        throw new Error("Not implemented.");
     }
     getListUri() {
         return this.hostname + this.getResourcePathPart() + "/";
