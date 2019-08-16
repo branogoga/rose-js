@@ -1,3 +1,5 @@
-export function add(a: number, b: number): number {
-    return a + +b;
-}
+import * as Data from "./Data/index";
+
+export { Data };
+
+(<any>window).Data = Data;
