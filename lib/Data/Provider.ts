@@ -221,7 +221,7 @@ export abstract class Provider<ItemType>
         return this.hostname + this.getResourcePathPart() + "/delete?id=" + id;
     }
 
-    list(): Promise<Array<ItemType>> {
+    public list(): Promise<Array<ItemType>> {
         return new Promise<Array<ItemType>>(
             function(
                 this: Provider<ItemType>,
@@ -239,7 +239,7 @@ export abstract class Provider<ItemType>
             }.bind(this));
     }
 
-    get(id: number): Promise<ItemType> {
+    public get(id: number): Promise<ItemType> {
         return new Promise<ItemType>(
             function(
                 this: Provider<ItemType>,
@@ -260,7 +260,7 @@ export abstract class Provider<ItemType>
         }.bind(this));
     }
 
-    add(item: ItemType): Promise<ItemType> {
+    public add(item: ItemType): Promise<ItemType> {
         return new Promise<ItemType>(
             function(
                 this: Provider<ItemType>,
@@ -279,7 +279,7 @@ export abstract class Provider<ItemType>
         }.bind(this));
     }
 
-    edit(item: ItemType): Promise<ItemType> {
+    public edit(item: ItemType): Promise<ItemType> {
         return new Promise<ItemType>(
             function(
                 this: Provider<ItemType>,
@@ -303,7 +303,7 @@ export abstract class Provider<ItemType>
         }.bind(this));
     }
 
-    remove(id: number): Promise<ItemType> {
+    public remove(id: number): Promise<ItemType> {
         return new Promise<ItemType>(
             function(
                 this: Provider<ItemType>,

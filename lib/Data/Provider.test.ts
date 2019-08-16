@@ -27,7 +27,7 @@ class ItemProviderMockup extends Provider.ProviderMockup<Item> {
 describe("Data", () => {
     describe(".ProviderMockup", () => {
         it(" has initialy empty list of sets", async () => {
-            let dataProvider: ItemProviderMockup
+            let dataProvider: Provider.ProviderInterface<Item>
                 = new ItemProviderMockup();
 
             let list = await dataProvider.list();
