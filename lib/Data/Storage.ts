@@ -8,19 +8,19 @@ export interface StorageInterface<ItemType> {
 export class InMemoryStorage<ItemType> implements StorageInterface<ItemType> {
   constructor(private store: Map<string, ItemType> = new Map<string, ItemType>()) {}
 
-  clear() {
+  public clear() {
     this.store.clear();
   }
 
-  getItem(key: string): ItemType | null {
+  public getItem(key: string): ItemType | null {
     return this.store.get(key) || null;
   }
 
-  setItem(key: string, value: ItemType): void {
+  public setItem(key: string, value: ItemType): void {
     this.store.set(key, value);
   }
 
-  removeItem(key: string): ItemType | null {
+  public removeItem(key: string): ItemType | null {
     const item = this.getItem(key);
     this.store.delete(key);
     return item;
@@ -34,7 +34,7 @@ export class BrowserStorage<ItemType> implements StorageInterface<ItemType> {
     this.storage.clear();
   }
 
-  getItem(key: string): ItemType | null {
+  public getItem(key: string): ItemType | null {
     const item: string | null = this.storage.getItem(key);
     if (item == null) {
       return null;
@@ -43,11 +43,11 @@ export class BrowserStorage<ItemType> implements StorageInterface<ItemType> {
     return JSON.parse(item);
   }
 
-  setItem(key: string, value: ItemType): void {
+  public setItem(key: string, value: ItemType): void {
     this.storage.setItem(key, JSON.stringify(value));
   }
 
-  removeItem(key: string): ItemType | null {
+  public removeItem(key: string): ItemType | null {
     const item = this.getItem(key);
     this.storage.removeItem(key);
     return item;
