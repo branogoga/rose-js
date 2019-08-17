@@ -1,35 +1,46 @@
 {
-  "name": "rose-js",
-  "version": "0.1.5",
-  "description": "Shared Typescript tooling for web projects. ",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
-  },
-  "jest": {
-    "collectCoverage": true
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/branogoga/rose-js.git"
-  },
-  "author": "Brano Goga",
-  "license": "N/A",
-  "bugs": {
-    "url": "https://github.com/branogoga/rose-js/issues"
-  },
-  "homepage": "https://github.com/branogoga/rose-js#readme",
-  "dependencies": {
-    "axios": "^0.19.0",
-    "typescript": "^3.5.3"
-  },
-  "devDependencies": {
-    "@types/jest": "^24.0.17",
-    "coveralls": "^3.0.6",
-    "jest": "^24.8.0",
-    "ts-jest": "^24.0.2"
-  }
+    "name": "rose-js",
+    "version": "0.1.5",
+    "description": "Shared Typescript tooling for web projects. ",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": ["dist/**/*"],
+    "scripts": {
+        "build": "tsc",
+        "format": "prettier --write \"lib/**/*.ts\" \"lib/**/*.js\"",
+        "lint": "tslint -c tsconfig.json",
+        "test": "jest",
+        "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+        "prepare": "npm run build",
+        "prepublishOnly": "npm test && npm run lint",
+        "preversion": "npm run lint",
+        "version": "npm run format && git add -A src",
+        "postversion": "git push && git push --tags"
+    },
+    "jest": {
+        "collectCoverage": true
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/branogoga/rose-js.git"
+    },
+    "author": "Brano Goga",
+    "license": "N/A",
+    "bugs": {
+        "url": "https://github.com/branogoga/rose-js/issues"
+    },
+    "homepage": "https://github.com/branogoga/rose-js#readme",
+    "dependencies": {
+        "axios": "^0.19.0",
+        "typescript": "^3.5.3"
+    },
+    "devDependencies": {
+        "@types/jest": "^24.0.17",
+        "coveralls": "^3.0.6",
+        "jest": "^24.8.0",
+        "prettier": "^1.18.2",
+        "ts-jest": "^24.0.2",
+        "ts-lint": "^4.5.1",
+        "tslint-config-prettier": "^1.18.0"
+    }
 }

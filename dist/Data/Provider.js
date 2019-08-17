@@ -152,8 +152,7 @@ class Provider {
         return new Promise(function (resolve, reject) {
             const uri = this.getListUri();
             console.log(uri);
-            axios_1.default.get(uri)
-                .then(function (response) {
+            axios_1.default.get(uri).then(function (response) {
                 console.log(response);
                 const items = response.data;
                 resolve(items);
@@ -164,11 +163,10 @@ class Provider {
         return new Promise(function (resolve, reject) {
             const uri = this.getGetUri();
             const params = {
-                id: id
+                id: id,
             };
             console.log(uri);
-            axios_1.default.get(uri, { params })
-                .then(function (response) {
+            axios_1.default.get(uri, { params }).then(function (response) {
                 console.log(response);
                 const item = response.data;
                 resolve(item);
@@ -179,8 +177,7 @@ class Provider {
         return new Promise(function (resolve, reject) {
             const uri = this.getAddUri();
             console.log(uri);
-            axios_1.default.post(uri, item)
-                .then(function (response) {
+            axios_1.default.post(uri, item).then(function (response) {
                 console.log(response);
                 const result = response.data;
                 resolve(result);
@@ -196,8 +193,7 @@ class Provider {
             }
             const uri = this.getEditUri(id);
             console.log(uri);
-            axios_1.default.post(uri, item)
-                .then(function (response) {
+            axios_1.default.post(uri, item).then(function (response) {
                 console.log(response);
                 const result = response.data;
                 resolve(result);
@@ -208,8 +204,7 @@ class Provider {
         return new Promise(function (resolve, reject) {
             const uri = this.getRemoveUri(id);
             console.log(uri);
-            axios_1.default.post(uri)
-                .then(function (response) {
+            axios_1.default.post(uri).then(function (response) {
                 console.log(response);
                 const result = response.data;
                 resolve(result);
