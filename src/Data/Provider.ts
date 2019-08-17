@@ -11,7 +11,6 @@ export interface ProviderInterface<ItemType> {
 }
 
 export abstract class ProviderMockup<ItemType> implements ProviderInterface<ItemType> {
-
   private nextId: number = 1;
   private items: Map<number, ItemType> = new Map<number, ItemType>();
 
@@ -21,11 +20,7 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 
   public list(): Promise<ItemType[]> {
     return new Promise<ItemType[]>(
-      function(
-        this: ProviderMockup<ItemType>,
-        resolve: (items: ItemType[]) => void,
-        reject: (reason: any) => void,
-      ) {
+      function(this: ProviderMockup<ItemType>, resolve: (items: ItemType[]) => void, reject: (reason: any) => void) {
         const items: ItemType[] = [];
         for (let value of this.items.values()) {
           items.push(value);
@@ -173,93 +168,73 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   public constructor(protected hostname: string = "http://vertigo.localhost") {}
 
   public list(): Promise<ItemType[]> {
-    return new Promise<ItemType[]>(
-      (resolve: (items: ItemType[]) => void, reject: (reason: any) => void) => {
-        const uri: string = this.getListUri();
-        console.log(uri);
-        axios.get(uri).then(
-          (response: AxiosResponse<ItemType[]>) => {
-            console.log(response);
-            const items: ItemType[] = response.data;
-            resolve(items);
-          },
-        );
-      },
-    );
+    return new Promise<ItemType[]>((resolve: (items: ItemType[]) => void, reject: (reason: any) => void) => {
+      const uri: string = this.getListUri();
+      console.log(uri);
+      axios.get(uri).then((response: AxiosResponse<ItemType[]>) => {
+        console.log(response);
+        const items: ItemType[] = response.data;
+        resolve(items);
+      });
+    });
   }
 
   public get(id: number): Promise<ItemType> {
-    return new Promise<ItemType>(
-      (resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
-        const uri: string = this.getGetUri();
-        const params = {
-          id
-        };
-        console.log(uri);
-        axios.get(uri, { params }).then(
-          (response: AxiosResponse<ItemType>) => {
-            console.log(response);
-            const item: ItemType = response.data;
-            resolve(item);
-          },
-        );
-      },
-    );
+    return new Promise<ItemType>((resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
+      const uri: string = this.getGetUri();
+      const params = {
+        id,
+      };
+      console.log(uri);
+      axios.get(uri, { params }).then((response: AxiosResponse<ItemType>) => {
+        console.log(response);
+        const item: ItemType = response.data;
+        resolve(item);
+      });
+    });
   }
 
   public add(item: ItemType): Promise<ItemType> {
-    return new Promise<ItemType>(
-      (resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
-        const uri: string = this.getAddUri();
-        console.log(uri);
+    return new Promise<ItemType>((resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
+      const uri: string = this.getAddUri();
+      console.log(uri);
 
-        axios.post(uri, item).then(
-          (response: AxiosResponse<ItemType>) => {
-            console.log(response);
-            const result: ItemType = response.data;
-            resolve(result);
-          },
-        );
-      },
-    );
+      axios.post(uri, item).then((response: AxiosResponse<ItemType>) => {
+        console.log(response);
+        const result: ItemType = response.data;
+        resolve(result);
+      });
+    });
   }
 
   public edit(item: ItemType): Promise<ItemType> {
-    return new Promise<ItemType>(
-      (resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
-        const id: number | undefined = this.getId(item);
-        if (!id) {
-          reject("Invalid ID.");
-          return;
-        }
+    return new Promise<ItemType>((resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
+      const id: number | undefined = this.getId(item);
+      if (!id) {
+        reject("Invalid ID.");
+        return;
+      }
 
-        const uri: string = this.getEditUri(id);
-        console.log(uri);
-        axios.post(uri, item).then(
-          (response: AxiosResponse<ItemType>) => {
-            console.log(response);
-            const result: ItemType = response.data;
-            resolve(result);
-          },
-        );
-      },
-    );
+      const uri: string = this.getEditUri(id);
+      console.log(uri);
+      axios.post(uri, item).then((response: AxiosResponse<ItemType>) => {
+        console.log(response);
+        const result: ItemType = response.data;
+        resolve(result);
+      });
+    });
   }
 
   public remove(id: number): Promise<ItemType> {
-    return new Promise<ItemType>(
-      (resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
-        const uri: string = this.getRemoveUri(id);
-        console.log(uri);
-        axios.post(uri).then(
-          (response: AxiosResponse<ItemType>) => {
-            console.log(response);
-            const result: ItemType = response.data;
-            resolve(result);
-          },
-        );
-      },
-    );
+    return new Promise<ItemType>((resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
+      const uri: string = this.getRemoveUri(id);
+      console.log(uri);
+      axios.post(uri).then((response: AxiosResponse<ItemType>) => {
+        console.log(response);
+        const result: ItemType = response.data;
+        resolve(result);
+      });
+    });
   }
 
   protected abstract getId(item: ItemType): number | undefined;
@@ -284,5 +259,4 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   protected getRemoveUri(id: number): string {
     return this.hostname + this.getResourcePathPart() + "/delete?id=" + id;
   }
-
 }

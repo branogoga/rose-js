@@ -1,14 +1,16 @@
 {
     "name": "rose-js",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "Shared Typescript tooling for web projects. ",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "files": ["dist/**/*"],
+    "files": [
+        "dist/**/*"
+    ],
     "scripts": {
         "build": "tsc",
-        "format": "prettier --write \"lib/**/*.ts\" \"lib/**/*.js\"",
-        "lint": "tslint -c tslint.json 'lib/**/*.ts'",
+        "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+        "lint": "tslint -c tslint.json 'src/**/*.ts'",
         "test": "jest",
         "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
         "prepare": "npm run build",
