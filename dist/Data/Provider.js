@@ -8,8 +8,14 @@ class ProviderMockup {
         this.items = new Map();
         this.load();
     }
-    list() {
+    list(limit = 100, page = 0) {
         return new Promise(function (resolve, reject) {
+            if (limit <= 0) {
+                throw new Error("Parameter 'limit' must be positive number.");
+            }
+            if (page < 0) {
+                throw new Error("Parameter 'age' must be positive number.");
+            }
             const items = [];
             for (let value of this.items.values()) {
                 items.push(value);
@@ -133,8 +139,77 @@ class Provider {
     constructor(hostname = "http://vertigo.localhost") {
         this.hostname = hostname;
     }
-    getListUri() {
-        return this.hostname + this.getResourcePathPart() + "/";
+    list(limit = 100, page = 0) {
+        return new Promise((resolve, reject) => {
+            if (limit <= 0) {
+                throw new Error("Parameter 'limit' must be positive number.");
+            }
+            if (page < 0) {
+                throw new Error("Parameter 'age' must be positive number.");
+            }
+            const uri = this.getListUri(limit, page);
+            console.log(uri);
+            axios_1.default.get(uri).then((response) => {
+                console.log(response);
+                const items = response.data;
+                resolve(items);
+            });
+        });
+    }
+    get(id) {
+        return new Promise((resolve, reject) => {
+            const uri = this.getGetUri();
+            const params = {
+                id,
+            };
+            console.log(uri);
+            axios_1.default.get(uri, { params }).then((response) => {
+                console.log(response);
+                const item = response.data;
+                resolve(item);
+            });
+        });
+    }
+    add(item) {
+        return new Promise((resolve, reject) => {
+            const uri = this.getAddUri();
+            console.log(uri);
+            axios_1.default.post(uri, item).then((response) => {
+                console.log(response);
+                const result = response.data;
+                resolve(result);
+            });
+        });
+    }
+    edit(item) {
+        return new Promise((resolve, reject) => {
+            const id = this.getId(item);
+            if (!id) {
+                reject("Invalid ID.");
+                return;
+            }
+            const uri = this.getEditUri(id);
+            console.log(uri);
+            axios_1.default.post(uri, item).then((response) => {
+                console.log(response);
+                const result = response.data;
+                resolve(result);
+            });
+        });
+    }
+    remove(id) {
+        return new Promise((resolve, reject) => {
+            const uri = this.getRemoveUri(id);
+            console.log(uri);
+            axios_1.default.post(uri).then((response) => {
+                console.log(response);
+                const result = response.data;
+                resolve(result);
+            });
+        });
+    }
+    getListUri(limit, page) {
+        return this.hostname + this.getResourcePathPart() + "/" + "?limit=" + limit + "&page=" + page;
     }
     getGetUri() {
         return this.hostname + this.getResourcePathPart() + "/show";
@@ -147,69 +222,6 @@ class Provider {
     }
     getRemoveUri(id) {
         return this.hostname + this.getResourcePathPart() + "/delete?id=" + id;
-    }
-    list() {
-        return new Promise(function (resolve, reject) {
-            const uri = this.getListUri();
-            console.log(uri);
-            axios_1.default.get(uri).then(function (response) {
-                console.log(response);
-                const items = response.data;
-                resolve(items);
-            }.bind(this));
-        }.bind(this));
-    }
-    get(id) {
-        return new Promise(function (resolve, reject) {
-            const uri = this.getGetUri();
-            const params = {
-                id: id,
-            };
-            console.log(uri);
-            axios_1.default.get(uri, { params }).then(function (response) {
-                console.log(response);
-                const item = response.data;
-                resolve(item);
-            }.bind(this));
-        }.bind(this));
-    }
-    add(item) {
-        return new Promise(function (resolve, reject) {
-            const uri = this.getAddUri();
-            console.log(uri);
-            axios_1.default.post(uri, item).then(function (response) {
-                console.log(response);
-                const result = response.data;
-                resolve(result);
-            }.bind(this));
-        }.bind(this));
-    }
-    edit(item) {
-        return new Promise(function (resolve, reject) {
-            const id = this.getId(item);
-            if (!id) {
-                reject("Invalid ID.");
-                return;
-            }
-            const uri = this.getEditUri(id);
-            console.log(uri);
-            axios_1.default.post(uri, item).then(function (response) {
-                console.log(response);
-                const result = response.data;
-                resolve(result);
-            }.bind(this));
-        }.bind(this));
-    }
-    remove(id) {
-        return new Promise(function (resolve, reject) {
-            const uri = this.getRemoveUri(id);
-            console.log(uri);
-            axios_1.default.post(uri).then(function (response) {
-                console.log(response);
-                const result = response.data;
-                resolve(result);
-            }.bind(this));
-        }.bind(this));
     }
 }
 exports.Provider = Provider;

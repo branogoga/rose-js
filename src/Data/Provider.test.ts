@@ -29,7 +29,7 @@ describe("Data", () => {
     it(" has initialy empty list of sets", async () => {
       let dataProvider: Provider.ProviderInterface<Item> = new ItemProviderMockup();
 
-      let list = await dataProvider.list();
+      let list = await dataProvider.list(100, 0);
       expect(list.length).toBe(0);
     });
 

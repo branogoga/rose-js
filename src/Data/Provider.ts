@@ -3,7 +3,7 @@ import * as Storage from "./Storage";
 import axios, { AxiosResponse } from "axios";
 
 export interface ProviderInterface<ItemType> {
-  list(): Promise<ItemType[]>;
+  list(limit?: number, page?: number): Promise<ItemType[]>;
   get(id: number): Promise<ItemType>;
   add(item: ItemType): Promise<ItemType>;
   edit(item: ItemType): Promise<ItemType>;
@@ -18,9 +18,15 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
     this.load();
   }
 
-  public list(): Promise<ItemType[]> {
+  public list(limit: number = 100, page: number = 0): Promise<ItemType[]> {
     return new Promise<ItemType[]>(
       function(this: ProviderMockup<ItemType>, resolve: (items: ItemType[]) => void, reject: (reason: any) => void) {
+        if(limit <= 0) {
+          throw new Error("Parameter 'limit' must be positive number.");
+        }
+        if(page < 0) {
+          throw new Error("Parameter 'age' must be positive number.");
+        }
         const items: ItemType[] = [];
         for (let value of this.items.values()) {
           items.push(value);
@@ -167,9 +173,15 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 export abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
   public constructor(protected hostname: string = "http://vertigo.localhost") {}
 
-  public list(): Promise<ItemType[]> {
+  public list(limit: number = 100, page: number = 0): Promise<ItemType[]> {
     return new Promise<ItemType[]>((resolve: (items: ItemType[]) => void, reject: (reason: any) => void) => {
-      const uri: string = this.getListUri();
+      if(limit <= 0) {
+        throw new Error("Parameter 'limit' must be positive number.");
+      }
+      if(page < 0) {
+        throw new Error("Parameter 'age' must be positive number.");
+      }
+    const uri: string = this.getListUri(limit, page);
       console.log(uri);
       axios.get(uri).then((response: AxiosResponse<ItemType[]>) => {
         console.log(response);
@@ -240,8 +252,8 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   protected abstract getId(item: ItemType): number | undefined;
   protected abstract getResourcePathPart(): string;
 
-  protected getListUri(): string {
-    return this.hostname + this.getResourcePathPart() + "/";
+  protected getListUri(limit: number, page: number): string {
+    return this.hostname + this.getResourcePathPart() + "/" + "?limit=" + limit + "&page=" + page;
   }
 
   protected getGetUri(): string {

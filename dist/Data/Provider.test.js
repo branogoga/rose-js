@@ -33,7 +33,7 @@ describe("Data", () => {
     describe(".ProviderMockup", () => {
         it(" has initialy empty list of sets", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
-            let list = yield dataProvider.list();
+            let list = yield dataProvider.list(100, 0);
             expect(list.length).toBe(0);
         }));
         it(" adds an item", () => __awaiter(this, void 0, void 0, function* () {
