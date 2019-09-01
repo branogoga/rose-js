@@ -253,7 +253,7 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   protected abstract getResourcePathPart(): string;
 
   protected getListUri(limit: number, page: number): string {
-    return this.hostname + this.getResourcePathPart() + "/" + "?limit=" + limit + "&page=" + page;
+    return this.hostname + this.getResourcePathPart() + "/list" + "?limit=" + limit + "&page=" + page;
   }
 
   protected getGetUri(): string {
