@@ -193,7 +193,7 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
 
   public get(id: number): Promise<ItemType> {
     return new Promise<ItemType>((resolve: (item: ItemType) => void, reject: (reason: any) => void) => {
-      const uri: string = this.getGetUri();
+      const uri: string = this.getGetUri(id);
       const params = {
         id,
       };
@@ -256,8 +256,8 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
     return this.hostname + this.getResourcePathPart() + "/list" + "?limit=" + limit + "&page=" + page;
   }
 
-  protected getGetUri(): string {
-    return this.hostname + this.getResourcePathPart() + "/show";
+  protected getGetUri(id: number): string {
+    return this.hostname + this.getResourcePathPart() + "/show/" + id;
   }
 
   protected getAddUri(): string {
@@ -265,10 +265,10 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   }
 
   protected getEditUri(id: number): string {
-    return this.hostname + this.getResourcePathPart() + "/edit?id=" + id;
+    return this.hostname + this.getResourcePathPart() + "/edit/" + id + "?id=" + id;
   }
 
   protected getRemoveUri(id: number): string {
-    return this.hostname + this.getResourcePathPart() + "/delete?id=" + id;
+    return this.hostname + this.getResourcePathPart() + "/delete/" + id + "?id=" + id;
   }
 }
