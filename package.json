@@ -14,7 +14,7 @@
         "test": "jest",
         "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
         "prepare": "npm run build",
-        "prepublishOnly": "npm test && npm run lint",
+        "prepublishOnly": "npm run test",
         "preversion": "npm run lint",
         "version": "npm run format && git add -A src",
         "postversion": "git push && git push --tags"
