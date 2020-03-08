@@ -1,6 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
+class OrderItem {
+    constructor(column, direction = "ASC") {
+        this.column = column;
+        this.direction = direction;
+    }
+    ;
+    getColumn() {
+        return this.column;
+    }
+    getDirection() {
+        return this.direction;
+    }
+}
+exports.OrderItem = OrderItem;
+class FilterItem {
+    constructor(key, value) {
+        this.key = key;
+        this.value = value;
+    }
+    ;
+    getKey() {
+        return this.key;
+    }
+    getValue() {
+        return this.value;
+    }
+}
+exports.FilterItem = FilterItem;
 class ProviderMockup {
     constructor(storage) {
         this.storage = storage;
@@ -8,7 +36,7 @@ class ProviderMockup {
         this.items = new Map();
         this.load();
     }
-    list(order, limit = 100, page = 0) {
+    list(filter, order, limit = 100, page = 0) {
         return new Promise(function (resolve, reject) {
             if (limit <= 0) {
                 throw new Error("Parameter 'limit' must be positive number.");
@@ -21,6 +49,7 @@ class ProviderMockup {
                 items.push(value);
             }
             // TO DO: Sort items
+            // TO DO: Filter items
             resolve(items);
         }.bind(this));
     }
@@ -137,10 +166,10 @@ class ProviderMockup {
 }
 exports.ProviderMockup = ProviderMockup;
 class Provider {
-    constructor(hostname = "http://vertigo.localhost") {
+    constructor(hostname = "http://vertigo.localhost/") {
         this.hostname = hostname;
     }
-    list(order, limit = 100, page = 0) {
+    list(filter, order, limit = 100, page = 0) {
         return new Promise((resolve, reject) => {
             if (limit <= 0) {
                 throw new Error("Parameter 'limit' must be positive number.");
@@ -148,7 +177,7 @@ class Provider {
             if (page < 0) {
                 throw new Error("Parameter 'age' must be positive number.");
             }
-            const uri = this.getListUri(order, limit, page);
+            const uri = this.getListUri(filter, order, limit, page);
             console.log(uri);
             axios_1.default.get(uri).then((response) => {
                 console.log(response);
@@ -209,11 +238,25 @@ class Provider {
             });
         });
     }
-    getListUri(order, limit, page) {
+    getListUri(filter, order, limit, page) {
         let uri = this.hostname + this.getResourcePathPart() + "/list";
         let separator = "?";
+        if (filter) {
+            for (let item of filter) {
+                uri = uri + separator + encodeURIComponent(item.getKey()) + "=" + encodeURIComponent(item.getValue());
+                separator = "&";
+            }
+        }
         if (order) {
-            uri = uri + separator + "order=" + order;
+            let orderValue = "";
+            for (let i = 0; i < order.length; i++) {
+                let item = order[i];
+                orderValue = orderValue + "[\"" + encodeURIComponent(item.getColumn()) + "\",\"" + encodeURIComponent(item.getDirection()) + "\"]";
+                if (i < order.length - 1) {
+                    orderValue = orderValue + ",";
+                }
+            }
+            uri = uri + separator + "order=" + "[" + orderValue + "]";
             separator = "&";
         }
         if (limit) {

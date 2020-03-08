@@ -36,15 +36,15 @@ class ItemProvider extends Provider.Provider {
     getResourcePathPart() {
         return "resource";
     }
-    getListUri(order, limit, page) {
-        return super.getListUri(order, limit, page);
+    getListUri(filter, order, limit, page) {
+        return super.getListUri(filter, order, limit, page);
     }
 }
 describe("Data", () => {
     describe(".ProviderMockup", () => {
         it(" has initialy empty list of sets", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
-            let list = yield dataProvider.list(undefined, 100, 0);
+            let list = yield dataProvider.list(undefined, undefined, 100, 0);
             expect(list.length).toBe(0);
         }));
         it(" adds an item", () => __awaiter(this, void 0, void 0, function* () {
@@ -121,7 +121,39 @@ describe("Data", () => {
         it(" asks for list", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProvider();
             let uri = dataProvider.getListUri();
-            expect(uri).toBe("/resource/list");
+            expect(uri).toBe("http://vertigo.localhost/resource/list");
+        }));
+        it(" asks for list with limit", () => __awaiter(this, void 0, void 0, function* () {
+            let dataProvider = new ItemProvider();
+            let uri = dataProvider.getListUri(undefined, undefined, 10);
+            expect(uri).toBe("http://vertigo.localhost/resource/list?limit=10");
+        }));
+        it(" asks for list with limit and page", () => __awaiter(this, void 0, void 0, function* () {
+            let dataProvider = new ItemProvider();
+            let uri = dataProvider.getListUri(undefined, undefined, 10, 3);
+            expect(uri).toBe("http://vertigo.localhost/resource/list?limit=10&page=3");
+        }));
+        it(" asks for list with order, limit and page", () => __awaiter(this, void 0, void 0, function* () {
+            let dataProvider = new ItemProvider();
+            let order = [
+                new Provider.OrderItem("column1", "DESC"),
+                new Provider.OrderItem("column2", "ASC")
+            ];
+            let uri = dataProvider.getListUri(undefined, order, 10, 3);
+            expect(uri).toBe('http://vertigo.localhost/resource/list?order=[["column1","DESC"],["column2","ASC"]]&limit=10&page=3');
+        }));
+        it(" asks for list with filter, order, limit and page", () => __awaiter(this, void 0, void 0, function* () {
+            let dataProvider = new ItemProvider();
+            let filter = [
+                new Provider.FilterItem("key1", "value1"),
+                new Provider.FilterItem("key2", 7)
+            ];
+            let order = [
+                new Provider.OrderItem("column1", "DESC"),
+                new Provider.OrderItem("column2", "ASC")
+            ];
+            let uri = dataProvider.getListUri(filter, order, 10, 3);
+            expect(uri).toBe('http://vertigo.localhost/resource/list?key1=value1&key2=7&order=[["column1","DESC"],["column2","ASC"]]&limit=10&page=3');
         }));
     });
 });
