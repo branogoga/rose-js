@@ -2,8 +2,33 @@ import * as Storage from "./Storage";
 
 import axios, { AxiosResponse } from "axios";
 
+export class OrderItem {
+  public constructor(private column: string, private direction: string = "ASC") {};
+
+  public getColumn(): string {
+    return this.column;
+  }
+
+  public getDirection(): any {
+    return this.direction;
+  }
+}
+
+export class FilterItem {
+
+  public constructor(private key: string, private value: any) {};
+
+  public getKey(): string {
+    return this.key;
+  }
+
+  public getValue(): any {
+    return this.value;
+  }
+}
+
 export interface ProviderInterface<ItemType> {
-  list(limit?: number, page?: number): Promise<ItemType[]>;
+  list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): Promise<ItemType[]>;
   get(id: number): Promise<ItemType>;
   add(item: ItemType): Promise<ItemType>;
   edit(item: ItemType): Promise<ItemType>;
@@ -18,7 +43,7 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
     this.load();
   }
 
-  public list(limit: number = 100, page: number = 0): Promise<ItemType[]> {
+  public list(filter?: FilterItem[], order?: OrderItem[], limit: number = 100, page: number = 0): Promise<ItemType[]> {
     return new Promise<ItemType[]>(
       function(this: ProviderMockup<ItemType>, resolve: (items: ItemType[]) => void, reject: (reason: any) => void) {
         if(limit <= 0) {
@@ -31,6 +56,11 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
         for (let value of this.items.values()) {
           items.push(value);
         }
+
+        // TO DO: Sort items
+
+        // TO DO: Filter items
+
         resolve(items);
       }.bind(this),
     );
@@ -171,9 +201,9 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 }
 
 export abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
-  public constructor(protected hostname: string = "http://vertigo.localhost") {}
+  public constructor(protected hostname: string = "http://vertigo.localhost/") {}
 
-  public list(limit: number = 100, page: number = 0): Promise<ItemType[]> {
+  public list(filter?: FilterItem[], order?: OrderItem[], limit: number = 100, page: number = 0): Promise<ItemType[]> {
     return new Promise<ItemType[]>((resolve: (items: ItemType[]) => void, reject: (reason: any) => void) => {
       if(limit <= 0) {
         throw new Error("Parameter 'limit' must be positive number.");
@@ -181,7 +211,7 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
       if(page < 0) {
         throw new Error("Parameter 'age' must be positive number.");
       }
-    const uri: string = this.getListUri(limit, page);
+    const uri: string = this.getListUri(filter, order, limit, page);
       console.log(uri);
       axios.get(uri).then((response: AxiosResponse<ItemType[]>) => {
         console.log(response);
@@ -252,8 +282,42 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   protected abstract getId(item: ItemType): number | undefined;
   protected abstract getResourcePathPart(): string;
 
-  protected getListUri(limit: number, page: number): string {
-    return this.hostname + this.getResourcePathPart() + "/list" + "?limit=" + limit + "&page=" + page;
+  protected getListUri(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): string {
+    let uri = this.hostname + this.getResourcePathPart() + "/list";
+    let separator = "?";
+
+    if(filter) {
+      for(let item of filter) {
+        uri = uri + separator + encodeURIComponent(item.getKey()) + "=" + encodeURIComponent(item.getValue());
+        separator = "&";
+      }
+    }
+
+    if(order) {
+      let orderValue: string = "";
+      for(let i: number = 0; i < order.length; i++) {
+        let item: OrderItem = order[i];
+        orderValue = orderValue + "[\"" + encodeURIComponent(item.getColumn()) + "\",\"" + encodeURIComponent(item.getDirection()) + "\"]";
+        if(i < order.length - 1) {
+          orderValue = orderValue + ",";
+        }
+      }
+
+      uri = uri + separator + "order=" + "[" + orderValue + "]";
+      separator = "&";
+    }
+
+    if(limit) {
+      uri = uri + separator + "limit=" + limit;
+      separator = "&";
+    }
+
+    if(page) {
+      uri = uri + separator + "page=" + page;
+      separator = "&";
+    }
+
+     return uri;
   }
 
   protected getGetUri(id: number): string {

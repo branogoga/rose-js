@@ -8,7 +8,7 @@ class ProviderMockup {
         this.items = new Map();
         this.load();
     }
-    list(limit = 100, page = 0) {
+    list(order, limit = 100, page = 0) {
         return new Promise(function (resolve, reject) {
             if (limit <= 0) {
                 throw new Error("Parameter 'limit' must be positive number.");
@@ -20,6 +20,7 @@ class ProviderMockup {
             for (let value of this.items.values()) {
                 items.push(value);
             }
+            // TO DO: Sort items
             resolve(items);
         }.bind(this));
     }
@@ -139,7 +140,7 @@ class Provider {
     constructor(hostname = "http://vertigo.localhost") {
         this.hostname = hostname;
     }
-    list(limit = 100, page = 0) {
+    list(order, limit = 100, page = 0) {
         return new Promise((resolve, reject) => {
             if (limit <= 0) {
                 throw new Error("Parameter 'limit' must be positive number.");
@@ -147,7 +148,7 @@ class Provider {
             if (page < 0) {
                 throw new Error("Parameter 'age' must be positive number.");
             }
-            const uri = this.getListUri(limit, page);
+            const uri = this.getListUri(order, limit, page);
             console.log(uri);
             axios_1.default.get(uri).then((response) => {
                 console.log(response);
@@ -158,7 +159,7 @@ class Provider {
     }
     get(id) {
         return new Promise((resolve, reject) => {
-            const uri = this.getGetUri();
+            const uri = this.getGetUri(id);
             const params = {
                 id,
             };
@@ -208,20 +209,34 @@ class Provider {
             });
         });
     }
-    getListUri(limit, page) {
-        return this.hostname + this.getResourcePathPart() + "/" + "?limit=" + limit + "&page=" + page;
+    getListUri(order, limit, page) {
+        let uri = this.hostname + this.getResourcePathPart() + "/list";
+        let separator = "?";
+        if (order) {
+            uri = uri + separator + "order=" + order;
+            separator = "&";
+        }
+        if (limit) {
+            uri = uri + separator + "limit=" + limit;
+            separator = "&";
+        }
+        if (page) {
+            uri = uri + separator + "page=" + page;
+            separator = "&";
+        }
+        return uri;
     }
-    getGetUri() {
-        return this.hostname + this.getResourcePathPart() + "/show";
+    getGetUri(id) {
+        return this.hostname + this.getResourcePathPart() + "/show/" + id;
     }
     getAddUri() {
         return this.hostname + this.getResourcePathPart() + "/add";
     }
     getEditUri(id) {
-        return this.hostname + this.getResourcePathPart() + "/edit?id=" + id;
+        return this.hostname + this.getResourcePathPart() + "/edit/" + id + "?id=" + id;
     }
     getRemoveUri(id) {
-        return this.hostname + this.getResourcePathPart() + "/delete?id=" + id;
+        return this.hostname + this.getResourcePathPart() + "/delete/" + id + "?id=" + id;
     }
 }
 exports.Provider = Provider;

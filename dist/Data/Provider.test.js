@@ -29,11 +29,22 @@ class ItemProviderMockup extends Provider.ProviderMockup {
         item.id = id;
     }
 }
+class ItemProvider extends Provider.Provider {
+    getId(item) {
+        return item.id;
+    }
+    getResourcePathPart() {
+        return "resource";
+    }
+    getListUri(order, limit, page) {
+        return super.getListUri(order, limit, page);
+    }
+}
 describe("Data", () => {
     describe(".ProviderMockup", () => {
         it(" has initialy empty list of sets", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
-            let list = yield dataProvider.list(100, 0);
+            let list = yield dataProvider.list(undefined, 100, 0);
             expect(list.length).toBe(0);
         }));
         it(" adds an item", () => __awaiter(this, void 0, void 0, function* () {
@@ -104,6 +115,13 @@ describe("Data", () => {
             expect(list.length).toBe(0);
             expect(removedItem.id).toBe(1);
             expect(removedItem.name).toBe("set1");
+        }));
+    });
+    describe(".Provider", () => {
+        it(" asks for list", () => __awaiter(this, void 0, void 0, function* () {
+            let dataProvider = new ItemProvider();
+            let uri = dataProvider.getListUri();
+            expect(uri).toBe("/resource/list");
         }));
     });
 });

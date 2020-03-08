@@ -24,12 +24,27 @@ class ItemProviderMockup extends Provider.ProviderMockup<Item> {
   }
 }
 
+class ItemProvider extends Provider.Provider<Item> {
+
+  protected getId(item: Item): number | undefined {
+    return item.id;
+  }
+
+  protected getResourcePathPart(): string {
+    return "resource";
+  }
+
+  public getListUri(filter?: Provider.FilterItem[], order?: Provider.OrderItem[], limit?: number, page?: number): string {
+    return super.getListUri(filter, order, limit, page);
+  }
+}
+
 describe("Data", () => {
   describe(".ProviderMockup", () => {
     it(" has initialy empty list of sets", async () => {
       let dataProvider: Provider.ProviderInterface<Item> = new ItemProviderMockup();
 
-      let list = await dataProvider.list(100, 0);
+      let list = await dataProvider.list(undefined, undefined, 100, 0);
       expect(list.length).toBe(0);
     });
 
@@ -136,6 +151,53 @@ describe("Data", () => {
 
       expect(removedItem.id).toBe(1);
       expect(removedItem.name).toBe("set1");
+    });
+  });
+  describe(".Provider", () => {
+    it(" asks for list", async () => {
+      let dataProvider: ItemProvider = new ItemProvider();
+
+      let uri: string = dataProvider.getListUri();
+      expect(uri).toBe("http://vertigo.localhost/resource/list");
+    });
+    it(" asks for list with limit", async () => {
+      let dataProvider: ItemProvider = new ItemProvider();
+
+      let uri: string = dataProvider.getListUri(undefined, undefined, 10);
+      expect(uri).toBe("http://vertigo.localhost/resource/list?limit=10");
+    });
+    it(" asks for list with limit and page", async () => {
+      let dataProvider: ItemProvider = new ItemProvider();
+
+      let uri: string = dataProvider.getListUri(undefined, undefined, 10, 3);
+      expect(uri).toBe("http://vertigo.localhost/resource/list?limit=10&page=3");
+    });
+    it(" asks for list with order, limit and page", async () => {
+      let dataProvider: ItemProvider = new ItemProvider();
+
+      let order = [
+        new Provider.OrderItem("column1","DESC"),
+        new Provider.OrderItem("column2","ASC")
+      ];
+
+      let uri: string = dataProvider.getListUri(undefined, order, 10, 3);
+      expect(uri).toBe('http://vertigo.localhost/resource/list?order=[["column1","DESC"],["column2","ASC"]]&limit=10&page=3');
+    });
+    it(" asks for list with filter, order, limit and page", async () => {
+      let dataProvider: ItemProvider = new ItemProvider();
+
+      let filter = [
+        new Provider.FilterItem("key1", "value1"),
+        new Provider.FilterItem("key2", 7)
+      ];
+
+      let order = [
+        new Provider.OrderItem("column1","DESC"),
+        new Provider.OrderItem("column2","ASC")
+      ];
+
+      let uri: string = dataProvider.getListUri(filter, order, 10, 3);
+      expect(uri).toBe('http://vertigo.localhost/resource/list?key1=value1&key2=7&order=[["column1","DESC"],["column2","ASC"]]&limit=10&page=3');
     });
   });
 });

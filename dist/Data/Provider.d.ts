@@ -1,6 +1,10 @@
 import * as Storage from "./Storage";
+export interface OrderItemInterface {
+    column: string;
+    direction: string;
+}
 export interface ProviderInterface<ItemType> {
-    list(limit?: number, page?: number): Promise<ItemType[]>;
+    list(order?: Array<OrderItemInterface>, limit?: number, page?: number): Promise<ItemType[]>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
     edit(item: ItemType): Promise<ItemType>;
@@ -11,7 +15,7 @@ export declare abstract class ProviderMockup<ItemType> implements ProviderInterf
     private nextId;
     private items;
     constructor(storage: Storage.StorageInterface<string>);
-    list(limit?: number, page?: number): Promise<ItemType[]>;
+    list(order?: Array<OrderItemInterface>, limit?: number, page?: number): Promise<ItemType[]>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
     edit(item: ItemType): Promise<ItemType>;
@@ -30,15 +34,15 @@ export declare abstract class ProviderMockup<ItemType> implements ProviderInterf
 export declare abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
     protected hostname: string;
     constructor(hostname?: string);
-    list(limit?: number, page?: number): Promise<ItemType[]>;
+    list(order?: Array<OrderItemInterface>, limit?: number, page?: number): Promise<ItemType[]>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
     edit(item: ItemType): Promise<ItemType>;
     remove(id: number): Promise<ItemType>;
     protected abstract getId(item: ItemType): number | undefined;
     protected abstract getResourcePathPart(): string;
-    protected getListUri(limit: number, page: number): string;
-    protected getGetUri(): string;
+    protected getListUri(order?: Array<OrderItemInterface>, limit?: number, page?: number): string;
+    protected getGetUri(id: number): string;
     protected getAddUri(): string;
     protected getEditUri(id: number): string;
     protected getRemoveUri(id: number): string;
