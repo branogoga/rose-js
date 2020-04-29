@@ -17,6 +17,11 @@ console.log(Rose.add(1,2));
 ```sh
 Output should be '3'
 ```
+
+## Build
+
+`npm run build`
+
 ## Test 
 ```sh
 npm run test
