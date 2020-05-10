@@ -1,6 +1,11 @@
 import * as Storage from "./Storage";
 
-import axios, { AxiosResponse } from "axios";
+import axios, { 
+  AxiosResponse, 
+  AxiosError, 
+  Cancel, 
+  CancelToken 
+} from "axios";
 
 export class OrderItem {
   public constructor(private column: string, private direction: string = "ASC") {};
@@ -28,7 +33,14 @@ export class FilterItem {
 }
 
 export interface ProviderInterface<ItemType> {
-  list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): Promise<ItemType[]>;
+  list(
+    filter?: FilterItem[], 
+    order?: OrderItem[], 
+    limit?: number, 
+    page?: number, 
+    cancelToken?: CancelToken
+  ): Promise<ItemType[]>;
+
   get(id: number): Promise<ItemType>;
   add(item: ItemType): Promise<ItemType>;
   edit(item: ItemType): Promise<ItemType>;
@@ -43,7 +55,14 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
     this.load();
   }
 
-  public list(filter?: FilterItem[], order?: OrderItem[], limit: number = 100, page: number = 0): Promise<ItemType[]> {
+  public list(
+    filter?: FilterItem[], 
+    order?: OrderItem[], 
+    limit: number = 100, 
+    page: number = 0, 
+    cancelToken?: CancelToken
+  ): Promise<ItemType[]> {
+
     return new Promise<ItemType[]>(
       function(this: ProviderMockup<ItemType>, resolve: (items: ItemType[]) => void, reject: (reason: any) => void) {
         if(limit <= 0) {
@@ -203,7 +222,14 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 export abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
   public constructor(protected hostname: string = "http://vertigo.localhost/") {}
 
-  public list(filter?: FilterItem[], order?: OrderItem[], limit: number = 100, page: number = 0): Promise<ItemType[]> {
+  public list(
+    filter?: FilterItem[], 
+    order?: OrderItem[], 
+    limit: number = 100, 
+    page: number = 0,
+    cancelToken?: CancelToken,
+  ): Promise<ItemType[]> {
+
     return new Promise<ItemType[]>((resolve: (items: ItemType[]) => void, reject: (reason: any) => void) => {
       if(limit <= 0) {
         throw new Error("Parameter 'limit' must be positive number.");
@@ -213,10 +239,17 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
       }
     const uri: string = this.getListUri(filter, order, limit, page);
       console.log(uri);
-      axios.get(uri).then((response: AxiosResponse<ItemType[]>) => {
+      axios.get(uri, {
+        cancelToken: cancelToken,
+      }).then((response: AxiosResponse<ItemType[]>) => {
         console.log(response);
         const items: ItemType[] = response.data;
         resolve(items);
+      }).catch((thrown: AxiosError | Cancel) => {
+        if(axios.isCancel(thrown)) {
+          const cancel: Cancel = thrown;
+          console.log("Request cancelled: " + cancel.message);
+        }
       });
     });
   }

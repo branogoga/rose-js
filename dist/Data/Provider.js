@@ -36,7 +36,7 @@ class ProviderMockup {
         this.items = new Map();
         this.load();
     }
-    list(filter, order, limit = 100, page = 0) {
+    list(filter, order, limit = 100, page = 0, cancelToken) {
         return new Promise(function (resolve, reject) {
             if (limit <= 0) {
                 throw new Error("Parameter 'limit' must be positive number.");
@@ -169,7 +169,7 @@ class Provider {
     constructor(hostname = "http://vertigo.localhost/") {
         this.hostname = hostname;
     }
-    list(filter, order, limit = 100, page = 0) {
+    list(filter, order, limit = 100, page = 0, cancelToken) {
         return new Promise((resolve, reject) => {
             if (limit <= 0) {
                 throw new Error("Parameter 'limit' must be positive number.");
@@ -179,10 +179,17 @@ class Provider {
             }
             const uri = this.getListUri(filter, order, limit, page);
             console.log(uri);
-            axios_1.default.get(uri).then((response) => {
+            axios_1.default.get(uri, {
+                cancelToken: cancelToken,
+            }).then((response) => {
                 console.log(response);
                 const items = response.data;
                 resolve(items);
+            }).catch((thrown) => {
+                if (axios_1.default.isCancel(thrown)) {
+                    const cancel = thrown;
+                    console.log("Request cancelled: " + cancel.message);
+                }
             });
         });
     }
