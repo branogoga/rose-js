@@ -50,7 +50,11 @@ class ProviderMockup {
             }
             // TO DO: Sort items
             // TO DO: Filter items
-            resolve(items);
+            const response = {
+                items: items,
+                count: items.length,
+            };
+            resolve(response);
         }.bind(this));
     }
     get(id) {
@@ -183,8 +187,8 @@ class Provider {
                 cancelToken: cancelToken,
             }).then((response) => {
                 console.log(response);
-                const items = response.data;
-                resolve(items);
+                const data = response.data;
+                resolve(data);
             }).catch((thrown) => {
                 if (axios_1.default.isCancel(thrown)) {
                     const cancel = thrown;

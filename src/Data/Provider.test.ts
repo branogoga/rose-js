@@ -45,7 +45,7 @@ describe("Data", () => {
       let dataProvider: Provider.ProviderInterface<Item> = new ItemProviderMockup();
 
       let list = await dataProvider.list(undefined, undefined, 100, 0);
-      expect(list.length).toBe(0);
+      expect(list.items.length).toBe(0);
     });
 
     it(" adds an item", async () => {
@@ -63,16 +63,16 @@ describe("Data", () => {
       expect(addedItem.name).toBe("set1");
 
       let list = await dataProvider.list();
-      expect(list.length).toBe(1);
-      expect(list[0].id).toBe(1);
-      expect(list[0].name).toBe("set1");
+      expect(list.items.length).toBe(1);
+      expect(list.items[0].id).toBe(1);
+      expect(list.items[0].name).toBe("set1");
     });
 
     it(" gets an item", async () => {
       let dataProvider: ItemProviderMockup = new ItemProviderMockup();
 
       let list = await dataProvider.list();
-      expect(list.length).toBe(0);
+      expect(list.items.length).toBe(0);
 
       const item: Item = new Item();
 
@@ -82,7 +82,7 @@ describe("Data", () => {
       const addedItem = await dataProvider.add(item);
 
       list = await dataProvider.list();
-      expect(list.length).toBe(1);
+      expect(list.items.length).toBe(1);
 
       expect(addedItem.id).not.toBeNull();
 
@@ -117,16 +117,16 @@ describe("Data", () => {
       expect(changedItem.name).toBe("changed name");
 
       let list = await dataProvider.list();
-      expect(list.length).toBe(1);
-      expect(list[0].id).toBe(1);
-      expect(list[0].name).toBe("changed name");
+      expect(list.items.length).toBe(1);
+      expect(list.items[0].id).toBe(1);
+      expect(list.items[0].name).toBe("changed name");
     });
 
     it(" removes an item", async () => {
       let dataProvider: ItemProviderMockup = new ItemProviderMockup();
 
       let list = await dataProvider.list();
-      expect(list.length).toBe(0);
+      expect(list.items.length).toBe(0);
 
       const item: Item = new Item();
 
@@ -136,7 +136,7 @@ describe("Data", () => {
       const addedItem = await dataProvider.add(item);
 
       list = await dataProvider.list();
-      expect(list.length).toBe(1);
+      expect(list.items.length).toBe(1);
 
       expect(addedItem.id).not.toBeNull();
 
@@ -147,7 +147,7 @@ describe("Data", () => {
       const removedItem = await dataProvider.remove(addedItem.id);
 
       list = await dataProvider.list();
-      expect(list.length).toBe(0);
+      expect(list.items.length).toBe(0);
 
       expect(removedItem.id).toBe(1);
       expect(removedItem.name).toBe("set1");

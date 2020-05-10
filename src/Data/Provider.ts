@@ -32,6 +32,11 @@ export class FilterItem {
   }
 }
 
+export interface ListResponse<ItemType> {
+  items: Array<ItemType>;
+  count: number;
+}
+
 export interface ProviderInterface<ItemType> {
   list(
     filter?: FilterItem[], 
@@ -39,7 +44,7 @@ export interface ProviderInterface<ItemType> {
     limit?: number, 
     page?: number, 
     cancelToken?: CancelToken
-  ): Promise<ItemType[]>;
+  ): Promise<ListResponse<ItemType>>;
 
   get(id: number): Promise<ItemType>;
   add(item: ItemType): Promise<ItemType>;
@@ -61,10 +66,10 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
     limit: number = 100, 
     page: number = 0, 
     cancelToken?: CancelToken
-  ): Promise<ItemType[]> {
+  ): Promise<ListResponse<ItemType>> {
 
-    return new Promise<ItemType[]>(
-      function(this: ProviderMockup<ItemType>, resolve: (items: ItemType[]) => void, reject: (reason: any) => void) {
+    return new Promise<ListResponse<ItemType>>(
+      function(this: ProviderMockup<ItemType>, resolve: (response: ListResponse<ItemType>) => void, reject: (reason: any) => void) {
         if(limit <= 0) {
           throw new Error("Parameter 'limit' must be positive number.");
         }
@@ -80,7 +85,12 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 
         // TO DO: Filter items
 
-        resolve(items);
+        const response: ListResponse<ItemType> = {
+          items: items,
+          count: items.length,
+        };
+
+        resolve(response);
       }.bind(this),
     );
   }
@@ -228,9 +238,9 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
     limit: number = 100, 
     page: number = 0,
     cancelToken?: CancelToken,
-  ): Promise<ItemType[]> {
+  ): Promise<ListResponse<ItemType>> {
 
-    return new Promise<ItemType[]>((resolve: (items: ItemType[]) => void, reject: (reason: any) => void) => {
+    return new Promise<ListResponse<ItemType>>((resolve: (response: ListResponse<ItemType>) => void, reject: (reason: any) => void) => {
       if(limit <= 0) {
         throw new Error("Parameter 'limit' must be positive number.");
       }
@@ -241,10 +251,10 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
       console.log(uri);
       axios.get(uri, {
         cancelToken: cancelToken,
-      }).then((response: AxiosResponse<ItemType[]>) => {
+      }).then((response: AxiosResponse<ListResponse<ItemType>>) => {
         console.log(response);
-        const items: ItemType[] = response.data;
-        resolve(items);
+        const data: ListResponse<ItemType> = response.data;
+        resolve(data);
       }).catch((thrown: AxiosError | Cancel) => {
         if(axios.isCancel(thrown)) {
           const cancel: Cancel = thrown;

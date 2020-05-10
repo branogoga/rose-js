@@ -45,7 +45,7 @@ describe("Data", () => {
         it(" has initialy empty list of sets", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
             let list = yield dataProvider.list(undefined, undefined, 100, 0);
-            expect(list.length).toBe(0);
+            expect(list.items.length).toBe(0);
         }));
         it(" adds an item", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
@@ -57,20 +57,20 @@ describe("Data", () => {
             expect(addedItem.id).toBe(1);
             expect(addedItem.name).toBe("set1");
             let list = yield dataProvider.list();
-            expect(list.length).toBe(1);
-            expect(list[0].id).toBe(1);
-            expect(list[0].name).toBe("set1");
+            expect(list.items.length).toBe(1);
+            expect(list.items[0].id).toBe(1);
+            expect(list.items[0].name).toBe("set1");
         }));
         it(" gets an item", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
             let list = yield dataProvider.list();
-            expect(list.length).toBe(0);
+            expect(list.items.length).toBe(0);
             const item = new Item();
             item.id = undefined;
             item.name = "set1";
             const addedItem = yield dataProvider.add(item);
             list = yield dataProvider.list();
-            expect(list.length).toBe(1);
+            expect(list.items.length).toBe(1);
             expect(addedItem.id).not.toBeNull();
             if (!addedItem.id) {
                 throw new Error("Invalid argument.");
@@ -92,27 +92,27 @@ describe("Data", () => {
             expect(changedItem.id).toBe(1);
             expect(changedItem.name).toBe("changed name");
             let list = yield dataProvider.list();
-            expect(list.length).toBe(1);
-            expect(list[0].id).toBe(1);
-            expect(list[0].name).toBe("changed name");
+            expect(list.items.length).toBe(1);
+            expect(list.items[0].id).toBe(1);
+            expect(list.items[0].name).toBe("changed name");
         }));
         it(" removes an item", () => __awaiter(this, void 0, void 0, function* () {
             let dataProvider = new ItemProviderMockup();
             let list = yield dataProvider.list();
-            expect(list.length).toBe(0);
+            expect(list.items.length).toBe(0);
             const item = new Item();
             item.id = undefined;
             item.name = "set1";
             const addedItem = yield dataProvider.add(item);
             list = yield dataProvider.list();
-            expect(list.length).toBe(1);
+            expect(list.items.length).toBe(1);
             expect(addedItem.id).not.toBeNull();
             if (!addedItem.id) {
                 throw new Error("Invalid argument.");
             }
             const removedItem = yield dataProvider.remove(addedItem.id);
             list = yield dataProvider.list();
-            expect(list.length).toBe(0);
+            expect(list.items.length).toBe(0);
             expect(removedItem.id).toBe(1);
             expect(removedItem.name).toBe("set1");
         }));

@@ -14,8 +14,12 @@ export declare class FilterItem {
     getKey(): string;
     getValue(): any;
 }
+export interface ListResponse<ItemType> {
+    items: Array<ItemType>;
+    count: number;
+}
 export interface ProviderInterface<ItemType> {
-    list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ItemType[]>;
+    list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ListResponse<ItemType>>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
     edit(item: ItemType): Promise<ItemType>;
@@ -26,7 +30,7 @@ export declare abstract class ProviderMockup<ItemType> implements ProviderInterf
     private nextId;
     private items;
     constructor(storage: Storage.StorageInterface<string>);
-    list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ItemType[]>;
+    list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ListResponse<ItemType>>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
     edit(item: ItemType): Promise<ItemType>;
@@ -45,7 +49,7 @@ export declare abstract class ProviderMockup<ItemType> implements ProviderInterf
 export declare abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
     protected hostname: string;
     constructor(hostname?: string);
-    list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ItemType[]>;
+    list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ListResponse<ItemType>>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
     edit(item: ItemType): Promise<ItemType>;
