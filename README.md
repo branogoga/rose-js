@@ -26,3 +26,9 @@ Output should be '3'
 ```sh
 npm run test
 ```
+
+## Publish new version
+```sh
+npm publish
+```
+
