@@ -32,12 +32,20 @@ export class FilterItem {
   }
 }
 
-export interface ListResponse<ItemType> {
-  items: Array<ItemType>;
+export interface CountResponse {
   count: number;
 }
 
+export interface ListResponse<ItemType> {
+  items: Array<ItemType>;
+}
+
 export interface ProviderInterface<ItemType> {
+
+  count(
+    filter?: FilterItem[], 
+  ): Promise<CountResponse>;
+
   list(
     filter?: FilterItem[], 
     order?: OrderItem[], 
@@ -58,6 +66,21 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 
   public constructor(private storage: Storage.StorageInterface<string>) {
     this.load();
+  }
+
+  public count(
+    filter?: FilterItem[], 
+  ): Promise<CountResponse> {
+    return new Promise<CountResponse>(
+      function(this: ProviderMockup<ItemType>, resolve: (response: CountResponse) => void, reject: (reason: any) => void) {
+
+        const response: CountResponse = {
+          count: 0,
+        };
+
+        resolve(response);
+      }.bind(this),
+    );
   }
 
   public list(
@@ -87,7 +110,6 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 
         const response: ListResponse<ItemType> = {
           items: items,
-          count: items.length,
         };
 
         resolve(response);
@@ -232,6 +254,25 @@ export abstract class ProviderMockup<ItemType> implements ProviderInterface<Item
 export abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
   public constructor(protected hostname: string = "http://vertigo.localhost/") {}
 
+  public count(
+    filter?: FilterItem[],
+  ): Promise<CountResponse> {
+    return new Promise<CountResponse>((resolve: (response: CountResponse) => void, reject: (reason: any) => void) => {
+    const uri: string = this.getCountUri(filter);
+      console.log(uri);
+      axios.get(uri).then((response: AxiosResponse<CountResponse>) => {
+        console.log(response);
+        const data: CountResponse = response.data;
+        resolve(data);
+      }).catch((thrown: AxiosError | Cancel) => {
+        if(axios.isCancel(thrown)) {
+          const cancel: Cancel = thrown;
+          console.log("Request cancelled: " + cancel.message);
+        }
+      });
+    });
+  }
+
   public list(
     filter?: FilterItem[], 
     order?: OrderItem[], 
@@ -325,8 +366,8 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
   protected abstract getId(item: ItemType): number | undefined;
   protected abstract getResourcePathPart(): string;
 
-  protected getListUri(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): string {
-    let uri = this.hostname + this.getResourcePathPart() + "/list";
+  protected getListUriHelper(action: string, filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): string {
+    let uri = this.hostname + this.getResourcePathPart() + "/" + action;
     let separator = "?";
 
     if(filter) {
@@ -361,6 +402,14 @@ export abstract class Provider<ItemType> implements ProviderInterface<ItemType> 
     }
 
      return uri;
+  }
+
+  protected getCountUri(filter?: FilterItem[]): string {
+    return this.getListUriHelper("count", filter);
+  }
+
+  protected getListUri(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): string {
+    return this.getListUriHelper("list", filter, order, limit, page);
   }
 
   protected getGetUri(id: number): string {

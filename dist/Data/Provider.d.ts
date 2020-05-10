@@ -14,11 +14,14 @@ export declare class FilterItem {
     getKey(): string;
     getValue(): any;
 }
-export interface ListResponse<ItemType> {
-    items: Array<ItemType>;
+export interface CountResponse {
     count: number;
 }
+export interface ListResponse<ItemType> {
+    items: Array<ItemType>;
+}
 export interface ProviderInterface<ItemType> {
+    count(filter?: FilterItem[]): Promise<CountResponse>;
     list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ListResponse<ItemType>>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
@@ -30,6 +33,7 @@ export declare abstract class ProviderMockup<ItemType> implements ProviderInterf
     private nextId;
     private items;
     constructor(storage: Storage.StorageInterface<string>);
+    count(filter?: FilterItem[]): Promise<CountResponse>;
     list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ListResponse<ItemType>>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
@@ -49,6 +53,7 @@ export declare abstract class ProviderMockup<ItemType> implements ProviderInterf
 export declare abstract class Provider<ItemType> implements ProviderInterface<ItemType> {
     protected hostname: string;
     constructor(hostname?: string);
+    count(filter?: FilterItem[]): Promise<CountResponse>;
     list(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number, cancelToken?: CancelToken): Promise<ListResponse<ItemType>>;
     get(id: number): Promise<ItemType>;
     add(item: ItemType): Promise<ItemType>;
@@ -56,6 +61,8 @@ export declare abstract class Provider<ItemType> implements ProviderInterface<It
     remove(id: number): Promise<ItemType>;
     protected abstract getId(item: ItemType): number | undefined;
     protected abstract getResourcePathPart(): string;
+    protected getListUriHelper(action: string, filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): string;
+    protected getCountUri(filter?: FilterItem[]): string;
     protected getListUri(filter?: FilterItem[], order?: OrderItem[], limit?: number, page?: number): string;
     protected getGetUri(id: number): string;
     protected getAddUri(): string;

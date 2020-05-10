@@ -36,6 +36,14 @@ class ProviderMockup {
         this.items = new Map();
         this.load();
     }
+    count(filter) {
+        return new Promise(function (resolve, reject) {
+            const response = {
+                count: 0,
+            };
+            resolve(response);
+        }.bind(this));
+    }
     list(filter, order, limit = 100, page = 0, cancelToken) {
         return new Promise(function (resolve, reject) {
             if (limit <= 0) {
@@ -52,7 +60,6 @@ class ProviderMockup {
             // TO DO: Filter items
             const response = {
                 items: items,
-                count: items.length,
             };
             resolve(response);
         }.bind(this));
@@ -173,6 +180,22 @@ class Provider {
     constructor(hostname = "http://vertigo.localhost/") {
         this.hostname = hostname;
     }
+    count(filter) {
+        return new Promise((resolve, reject) => {
+            const uri = this.getCountUri(filter);
+            console.log(uri);
+            axios_1.default.get(uri).then((response) => {
+                console.log(response);
+                const data = response.data;
+                resolve(data);
+            }).catch((thrown) => {
+                if (axios_1.default.isCancel(thrown)) {
+                    const cancel = thrown;
+                    console.log("Request cancelled: " + cancel.message);
+                }
+            });
+        });
+    }
     list(filter, order, limit = 100, page = 0, cancelToken) {
         return new Promise((resolve, reject) => {
             if (limit <= 0) {
@@ -249,8 +272,8 @@ class Provider {
             });
         });
     }
-    getListUri(filter, order, limit, page) {
-        let uri = this.hostname + this.getResourcePathPart() + "/list";
+    getListUriHelper(action, filter, order, limit, page) {
+        let uri = this.hostname + this.getResourcePathPart() + "/" + action;
         let separator = "?";
         if (filter) {
             for (let item of filter) {
@@ -279,6 +302,12 @@ class Provider {
             separator = "&";
         }
         return uri;
+    }
+    getCountUri(filter) {
+        return this.getListUriHelper("count", filter);
+    }
+    getListUri(filter, order, limit, page) {
+        return this.getListUriHelper("list", filter, order, limit, page);
     }
     getGetUri(id) {
         return this.hostname + this.getResourcePathPart() + "/show/" + id;
